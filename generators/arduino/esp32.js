@@ -82,9 +82,3 @@ Blockly.Arduino['arduino_pin_esp32DetachInterrupt'] = function(block) {
   var code = 'detachInterrupt(' + arg0 + ');\n';
   return code;
 };
-
-Blockly.Arduino['arduino_sensor_esp32ReadHallSensor'] = function() {
-  var code = "hallRead()";
-  return [code, Blockly.Arduino.ORDER_ATOMIC];
-};
-
