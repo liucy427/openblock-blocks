@@ -1,7 +1,7 @@
 /**
  * Visual Blocks Language
  *
- * Copyright 2021 Arthur Zheng.
+ * Copyright 2021 openblock.cc.
  * https://github.com/openblockcc/openblock-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,13 @@ goog.require('Blockly.Python');
 Blockly.Python['control_wait'] = function(block) {
   var arg0 = Blockly.Python.valueToCode(block, 'DURATION',
       Blockly.Python.ORDER_FUNCTION_CALL);
-  var code = "sleep(" + arg0 + " * 1000" + ")\n";
-  return code;
+  if (Blockly.Device.getDeviceType() === 'microbit') {
+    return "sleep(" + arg0 + " * 1000" + ")\n";
+  } else {
+    Blockly.Python.imports_['time'] = 'import time';
+
+    return "time.sleep_ms(" + arg0 + " * 1000" + ")\n";
+  }
 };
 
 Blockly.Python['control_repeat'] = function(block) {
