@@ -1,7 +1,7 @@
 /**
  * Visual Blocks Language
  *
- * Copyright 2020 Arthur Zheng.
+ * Copyright 2021 openblock.cc.
  * https://github.com/zhengyangliu/scratch-blocks
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
