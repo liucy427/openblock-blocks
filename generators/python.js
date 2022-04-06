@@ -141,8 +141,21 @@ Blockly.Python.init = function(workspace) {
 Blockly.Python.finish = function(code) {
   // Convert the imports dictionary into a list.
   var imports = [];
+  var modules = Object.create(null);
   for (var name in Blockly.Python.imports_) {
-    imports.push(Blockly.Python.imports_[name]);
+    // Combine multiple imports of the same module.
+    if (Blockly.Python.imports_[name].startsWith('from')) {
+      var arr = Blockly.Python.imports_[name].split(" ");
+      if (!modules[arr[1]]) {
+        modules[arr[1]] = [];
+      }
+      modules[arr[1]].push(arr[3]);
+    } else {
+      imports.push(Blockly.Python.imports_[name]);
+    }
+  }
+  for (var name in modules) {
+    imports.push('from ' + name + ' import ' + modules[name].join(', '));
   }
   // Convert the custom function definitions dictionary into a list.
   var customFunctions = [];
