@@ -30,7 +30,7 @@ Blockly.Python['microPython_console_consolePrint'] = function(block) {
   if (eol == 'warp') {
     return "print(" + msg + ")\n";
   } else {
-    return "print(" + msg + ", end='')\n";
+    return "print(" + msg + ", end = '')\n";
   }
 };
 
