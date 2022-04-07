@@ -96,18 +96,6 @@ Blockly.Python['microPython_pin_esp32ReadTouchPin'] = function(block) {
   return ['t' + pin + '.read()', Blockly.Python.ORDER_ATOMIC];
 };
 
-Blockly.Python['microPython_pin_esp32SetServoOutput'] = function(block) {
-
-  var pin = block.getFieldValue('PIN');
-  var angle = Blockly.Python.valueToCode(block, 'OUT', Blockly.Python.ORDER_FUNCTION_CALL) || '0';
-
-  Blockly.Python.imports_['Pin'] = 'from machine import Pin';
-  Blockly.Python.imports_['Servo'] = 'from pyb import Servo';
-  Blockly.Python.variables_['Servo' + pin] = 'servo' + pin + ' = Servo(' + pin + ')';
-
-  return 'servo' + pin + '.angle' + '(' + angle + ');\n';
-};
-
 Blockly.Python['microPython_pin_esp32AttachInterrupt'] = function(block) {
   var pin = block.getFieldValue('PIN');
   var mode = block.getFieldValue('MODE') || 'RISING';
