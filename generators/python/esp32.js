@@ -54,7 +54,7 @@ Blockly.Python['microPython_pin_esp32SetPwmOutput'] = function(block) {
 
   Blockly.Python.imports_['Pin'] = 'from machine import Pin';
   Blockly.Python.imports_['PWM'] = 'from machine import PWM';
-  Blockly.Python.variables_['PWM' + pin] = 'pwm' + pin + ' = PWM(Pin(' + pin + ', freq = 490))';
+  Blockly.Python.variables_['PWM' + pin] = 'pwm' + pin + ' = PWM(Pin(' + pin + '), freq = 490)';
 
   return 'pwm' + pin + '.duty(' + outValue + ')\n';
 };
@@ -80,7 +80,7 @@ Blockly.Python['microPython_pin_esp32ReadAnalogPin'] = function(block) {
   var pin = block.getFieldValue('PIN');
 
   Blockly.Python.imports_['Pin'] = 'from machine import Pin';
-  Blockly.Python.imports_['ADC'] = 'from machine import DAC';
+  Blockly.Python.imports_['ADC'] = 'from machine import ADC';
   Blockly.Python.variables_['ADC' + pin] = 'adc' + pin + ' = ADC(Pin(' + pin + '))';
 
   return ['adc' + pin + '.read_u16()', Blockly.Python.ORDER_ATOMIC];
@@ -91,7 +91,7 @@ Blockly.Python['microPython_pin_esp32ReadTouchPin'] = function(block) {
 
   Blockly.Python.imports_['Pin'] = 'from machine import Pin';
   Blockly.Python.imports_['TouchPad'] = 'from machine import TouchPad';
-  Blockly.Python.variables_['define_adc' + pin] = 't' + pin + ' = TouchPad(Pin(' + pin + '))';
+  Blockly.Python.variables_['ADC' + pin] = 't' + pin + ' = TouchPad(Pin(' + pin + '))';
 
   return ['t' + pin + '.read()', Blockly.Python.ORDER_ATOMIC];
 };
@@ -115,9 +115,21 @@ Blockly.Python['microPython_pin_esp32AttachInterrupt'] = function(block) {
   var branch = Blockly.Python.statementToCode(block, 'SUBSTACK');
   branch = Blockly.Python.addLoopTrap(branch, block.id);
 
+  if (branch) {
+    var variablesName = [];
+    for (var x in Blockly.Python.variables_) {
+      variablesName.push(Blockly.Python.variables_[x].slice(0, Blockly.Python.variables_[x].indexOf('=') - 1));
+    }
+    if (variablesName.length !== 0) {
+      branch = Blockly.Python.INDENT + "global " + variablesName.join(', ') + "\n" + branch;
+    }
+  } else {
+    branch = Blockly.Python.INDENT + 'pass\n';
+  }
+
   Blockly.Python.imports_['Pin'] = 'from machine import Pin';
   Blockly.Python.libraries_['definitions_ISR_' + mode + pin] =
-    'def ISR_' + mode + '_' + pin + '() {\n' + branch + '}';
+    'def ISR_' + mode + '_' + pin + '(pin):\n' + branch;
 
   if (mode === 'CHANGE') {
     return 'Pin(' + pin + ').irq(handler = ISR_' + mode + '_' + pin +
@@ -125,43 +137,4 @@ Blockly.Python['microPython_pin_esp32AttachInterrupt'] = function(block) {
   } else {
     return 'Pin(' + pin + ').irq(handler = ISR_' + mode + '_' + pin + ', trigger = Pin.IRQ_' + mode + ')\n';
   }
-};
-
-Blockly.Python['microPython_serial_esp32SerialBegin'] = function(block) {
-  var no = block.getFieldValue('NO') || '0';
-  var baud = block.getFieldValue('VALUE') || '115200';
-
-  Blockly.Python.imports_['UART'] = 'from machine import UART';
-
-  return 'uart' + no + ' = UART(' + no + ', ' + baud + ')\n';
-};
-
-Blockly.Python['microPython_serial_esp32SerialPrint'] = function(block) {
-  var no = block.getFieldValue('NO') || '1';
-  var str = Blockly.Python.valueToCode(block, 'VALUE', Blockly.Python.ORDER_FUNCTION_CALL) || '';
-  var eol = block.getFieldValue('EOL') || 'warp';
-
-  if (eol === 'warp') {
-    return 'uart' + no + '.write(str(' + str + ') + \'\\r\\n\')\n';
-  } else {
-    return 'uart' + no + '.write(str(' + str + '))\n';
-  }
-};
-
-Blockly.Python['microPython_serial_esp32SerialAvailable'] = function(block) {
-  var no = block.getFieldValue('NO') || '1';
-
-  return ['uart' + no + '.any()', Blockly.Python.ORDER_ATOMIC];
-};
-
-Blockly.Python['microPython_serial_esp32SerialReadString'] = function(block) {
-  var no = block.getFieldValue('NO') || '1';
-
-  return ['uart' + no + '.read()', Blockly.Python.ORDER_ATOMIC];
-};
-
-Blockly.Python['microPython_serial_esp32SerialReadARow'] = function(block) {
-  var no = block.getFieldValue('NO') || '1';
-
-  return ['uart' + no + '.readline()', Blockly.Python.ORDER_ATOMIC];
 };

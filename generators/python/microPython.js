@@ -25,6 +25,19 @@ goog.require('Blockly.Python');
 
 Blockly.Python['microPython_console_consolePrint'] = function(block) {
   var msg = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_FUNCTION_CALL) || '';
-  var code = "print(" + msg + ")\n";
-  return code;
+  var eol = block.getFieldValue('EOL') || 'warp';
+
+  if (eol == 'warp') {
+    return "print(" + msg + ")\n";
+  } else {
+    return "print(" + msg + ", end='')\n";
+  }
+};
+
+Blockly.Python['microPython_console_consoleInput'] = function(block) {
+  var msg = Blockly.Python.valueToCode(block, 'TEXT', Blockly.Python.ORDER_FUNCTION_CALL) || '';
+
+  var code = "input(" + msg + ")";
+
+  return [code, Blockly.Python.ORDER_ATOMIC];
 };

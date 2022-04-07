@@ -31,7 +31,7 @@ Blockly.Python['control_wait'] = function(block) {
   } else {
     Blockly.Python.imports_['time'] = 'import time';
 
-    return "time.sleep_ms(" + arg0 + " * 1000" + ")\n";
+    return "time.sleep_ms(int(" + arg0 + " * 1000" + "))\n";
   }
 };
 
